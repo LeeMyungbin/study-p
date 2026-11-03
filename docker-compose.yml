@@ -1,0 +1,19 @@
+# Local MySQL 8 for Study P
+#   docker compose up -d
+#   docker compose exec mysql mysql -uroot -pstudyp study_p
+# Scripts in mysql/ run once, in file-name order, when the volume is first created.
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: studyp        # local only
+      TZ: Asia/Seoul
+    command: --default-time-zone=+09:00
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./mysql/02_seed_activity_types.sql:/docker-entrypoint-initdb.d/02_seed_activity_types.sql:ro
+      - studyp-data:/var/lib/mysql
+volumes:
+  studyp-data:
