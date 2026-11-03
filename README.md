@@ -97,6 +97,10 @@ docker compose exec -T mysql mysql -uroot -pstudyp study_p < mysql/analysis/mont
 
 `main` 브랜치에 push하면 Cloudflare Workers Builds가 `web/`을 빌드해서 자동 배포합니다. Notion 토큰 같은 비밀 값은 Cloudflare Secret으로만 관리합니다.
 
+## 향후 계획
+
+- 앱 자체를 MySQL(외부 MySQL + Cloudflare Hyperdrive)로 옮기는 것 검토. 지금은 운영 DB(D1)와 분석 DB(MySQL)를 나눠, 분석 쿼리가 앱 속도에 영향을 주지 않고 비밀번호·사진이 분석 쪽으로 넘어가지 않게 함
+
 ## 개인정보
 
 분석 DB에는 학생을 별칭(S01 등)으로만 옮기고, 아이디·비밀번호·사진은 옮기지 않습니다. 실제 학생 데이터, API 키, Notion 토큰은 저장소에 올리지 않습니다. 비밀 값은 Cloudflare Secret으로만 관리합니다.
