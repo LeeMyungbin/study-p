@@ -1,0 +1,16 @@
+{
+  "name": "study-p-umirin",
+  "main": "vinext/server/fetch-handler",
+  "compatibility_date": "2026-05-22",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "NOTION_DATABASE_ID": "3e323a157d47800fae2cfea4a3363ed3"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "study-p-db",
+      "database_id": "e8055c64-8ef2-4c86-9c44-28743c2ff6f3"
+    }
+  ]
+}
