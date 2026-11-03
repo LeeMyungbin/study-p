@@ -93,6 +93,10 @@ docker compose exec -T mysql mysql -uroot -pstudyp < mysql/fixtures/portfolio_te
 docker compose exec -T mysql mysql -uroot -pstudyp study_p < mysql/analysis/monthly_change_lag.sql
 ```
 
+## 배포
+
+`main` 브랜치에 push하면 Cloudflare Workers Builds가 `web/`을 빌드해서 자동 배포합니다. Notion 토큰 같은 비밀 값은 Cloudflare Secret으로만 관리합니다.
+
 ## 개인정보
 
 분석 DB에는 학생을 별칭(S01 등)으로만 옮기고, 아이디·비밀번호·사진은 옮기지 않습니다. 실제 학생 데이터, API 키, Notion 토큰은 저장소에 올리지 않습니다. 비밀 값은 Cloudflare Secret으로만 관리합니다.
