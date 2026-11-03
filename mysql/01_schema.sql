@@ -46,7 +46,7 @@ CREATE TABLE activity_requests (
   status         ENUM('pending','approved','rejected','cancelled') NOT NULL DEFAULT 'pending',
   reviewed_at    DATETIME     NULL,
   reviewer       VARCHAR(50)  NULL,
-  reject_reason  VARCHAR(200) NULL,
+  reject_reason  VARCHAR(200) NULL,                 -- optional: rejecting without a reason is allowed
   note           VARCHAR(500) NULL,
   PRIMARY KEY (request_id),
   KEY idx_req_student_date (student_id, activity_date),
@@ -57,8 +57,7 @@ CREATE TABLE activity_requests (
   CONSTRAINT chk_req_review CHECK (
     (status = 'pending' AND reviewed_at IS NULL) OR
     (status <> 'pending' AND reviewed_at IS NOT NULL)
-  ),
-  CONSTRAINT chk_req_reject_reason CHECK (status <> 'rejected' OR reject_reason IS NOT NULL)
+  )
 ) ENGINE=InnoDB;
 
 CREATE TABLE point_history (

@@ -24,7 +24,6 @@ students 1 ─< activity_requests >─ 1 activity_types
 - 제약 조건으로 막는 데이터
   - 같은 요청이 두 번 적립되는 것 (`uq_history_request`)
   - 대기 중인데 처리 시각이 있거나, 처리됐는데 처리 시각이 없는 요청 (`chk_req_review`)
-  - 사유 없는 거절 (`chk_req_reject_reason`)
   - 0점 기록 (`chk_hist_points`)
 - 테스트 계정을 `student_id` 목록 대신 `students.is_test`로 구분
 

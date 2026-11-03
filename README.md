@@ -51,7 +51,6 @@ erDiagram
 |---|---|
 | 같은 요청이 두 번 적립 | `point_history.request_id` UNIQUE |
 | 대기 중인데 처리 시각이 있음 | CHECK `chk_req_review` |
-| 사유 없는 거절 | CHECK `chk_req_reject_reason` |
 | 없는 활동 유형 | 외래키 → `activity_types` |
 
 스키마: [`mysql/01_schema.sql`](mysql/01_schema.sql) · 이전 과정: [`mysql/README.md`](mysql/README.md)
