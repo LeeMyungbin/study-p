@@ -1,20 +1,24 @@
--- 2026-09 monthly pattern analysis (MySQL 8 port of sql/monthly_pattern_flags.sql)
--- SQLite substr() on TEXT dates -> DATETIME range filter + DAY()
--- The range filter (instead of DATE_FORMAT(created_at)=...) lets MySQL use idx_hist_student_time.
+-- 2026-09 monthly pattern analysis (MySQL 8 port of legacy-sqlite/monthly_pattern_flags.sql)
+-- * The app stores UTC; days are counted in KST (+9h) so late-evening records land on the right day.
+-- * The month filter is a range on the raw column so idx_history_student_time can be used.
 WITH monthly AS (
-  SELECT ph.student_id, ph.type_code, DAY(ph.created_at) AS day_of_month
+  SELECT ph.student_id,
+         ph.type,
+         DAY(ph.created_at + INTERVAL 9 HOUR) AS day_kst
   FROM point_history ph
-  JOIN students s ON s.student_id = ph.student_id
-  WHERE s.is_test = 1
-    AND ph.created_at >= '2026-09-01' AND ph.created_at < '2026-10-01'
+  JOIN users u ON u.id = ph.student_id
+  WHERE u.role = 'student'
+    AND u.id LIKE 'portfolio-test-%'
+    AND ph.created_at >= '2026-09-01' - INTERVAL 9 HOUR
+    AND ph.created_at <  '2026-10-01' - INTERVAL 9 HOUR
     AND ph.points > 0
 ), summary AS (
   SELECT student_id,
-         COUNT(*)                                                   AS total_activity,
-         COUNT(DISTINCT type_code)                                  AS activity_types,
-         ROUND(100.0 * SUM(type_code = 'attendance') / COUNT(*), 1) AS attendance_pct,
-         SUM(day_of_month <= 15)                                    AS early_activity,
-         SUM(day_of_month >= 16)                                    AS late_activity
+         COUNT(*)                                              AS total_activity,
+         COUNT(DISTINCT type)                                  AS activity_types,
+         ROUND(100.0 * SUM(type = 'attendance') / COUNT(*), 1) AS attendance_pct,
+         SUM(day_kst <= 15)                                    AS early_activity,
+         SUM(day_kst >= 16)                                    AS late_activity
   FROM monthly
   GROUP BY student_id
 )

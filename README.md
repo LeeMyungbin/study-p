@@ -19,7 +19,7 @@
 | | |
 |---|---|
 | **문제** | 공부방 보상 기록이 종이 도장판에만 있어서, "이번 주 몇 번 왔어요?" 같은 질문에 바로 답할 수 없음 |
-| **한 일** | 기록을 MySQL로 구조화 → 실제 공부방에서 시범 운영 → 부모님 질문을 요청서로 받아 SQL로 추출·검증 → 엑셀 피벗으로 전달 |
+| **한 일** | 기록 앱을 만들어 Cloudflare에 배포 → D1 운영 데이터를 MySQL 분석 DB로 추출 → 실제 공부방에서 시범 운영 → 부모님 질문을 요청서로 받아 SQL로 추출·검증 → 엑셀 피벗으로 전달 |
 | **결과** | 시범 운영 _○일_, 학생 _○명_, 기록 _○건_, 요청 _○건_ 처리, 예외 케이스 _○개_ 발견·규칙화 |
 
 ## 요청 처리 사례
@@ -38,20 +38,22 @@
 
 ```mermaid
 erDiagram
-    students ||--o{ activity_requests : "요청"
-    activity_types ||--o{ activity_requests : "유형"
-    activity_requests ||--o| point_history : "승인되면 1건"
-    students ||--o{ point_history : "적립"
-    activity_types ||--o{ point_history : "유형"
+    users ||--o{ point_requests : "요청"
+    point_requests ||--o| point_history : "승인되면 1건"
+    users ||--o{ point_history : "적립·사용"
+    users ||--o{ reward_requests : "카드 교환"
+    point_requests ||--o| attendance : "등원은 하루 1건"
 ```
 
-잘못된 데이터는 DB 단계에서 막습니다.
+앱은 Cloudflare D1에 기록하고, 분석은 같은 구조의 MySQL로 옮겨서 합니다. 앱 코드에만 있던 규칙은 MySQL에서 제약 조건으로 걸어 두었습니다.
 
 | 막는 것 | 방법 |
 |---|---|
 | 같은 요청이 두 번 적립 | `point_history.request_id` UNIQUE |
-| 대기 중인데 처리 시각이 있음 | CHECK `chk_req_review` |
-| 없는 활동 유형 | 외래키 → `activity_types` |
+| 하루에 등원 두 번 | `attendance (student_id, day)` UNIQUE |
+| 대기 중인데 처리 시각이 있음 | CHECK `chk_requests_review` |
+| 사유 없는 보류 | CHECK `chk_requests_hold_reason` |
+| 승인 안 된 카드 배송 | CHECK `chk_rewards_delivery` |
 
 스키마: [`mysql/01_schema.sql`](mysql/01_schema.sql) · 이전 과정: [`mysql/README.md`](mysql/README.md)
 
@@ -72,7 +74,8 @@ erDiagram
 
 ```text
 study-p/
-├── mysql/
+├── web/                         기록 앱 (Next.js + Cloudflare Workers + D1)
+├── mysql/                       분석 DB
 │   ├── 01_schema.sql            테이블·제약 조건
 │   ├── 02_seed_activity_types.sql
 │   ├── analysis/                분석 쿼리
@@ -92,4 +95,4 @@ docker compose exec -T mysql mysql -uroot -pstudyp study_p < mysql/analysis/mont
 
 ## 개인정보
 
-학생은 별칭(S01 등)으로만 저장합니다. 실제 이름, 사진 증빙, API 키는 저장소에 올리지 않습니다.
+분석 DB에는 학생을 별칭(S01 등)으로만 옮기고, 아이디·비밀번호·사진은 옮기지 않습니다. 실제 학생 데이터, API 키, Notion 토큰은 저장소에 올리지 않습니다. 비밀 값은 Cloudflare Secret으로만 관리합니다.
