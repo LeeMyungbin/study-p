@@ -6,7 +6,7 @@ Study P를 Cloudflare D1(SQLite)에서 MySQL 8로 옮기면서 만든 스키마�
 |---|---|
 | `01_schema.sql` | 테이블 4개: `students`, `activity_types`, `activity_requests`, `point_history` |
 | `02_seed_activity_types.sql` | 활동 유형 기준표 |
-| `analysis/` | 분석 쿼리 (기존 `sql/` 쿼리를 MySQL 문법으로 옮긴 것 포함) |
+| `analysis/` | 분석 쿼리 (기존 `legacy-sqlite/` 쿼리를 MySQL 문법으로 옮긴 것 포함) |
 | `fixtures/portfolio_test_scenarios.sql` | 테스트 시나리오 A/B/C. 실제 학생 데이터가 아님 |
 
 ## 테이블 관계
